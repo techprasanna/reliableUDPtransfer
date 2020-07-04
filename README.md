@@ -1,9 +1,9 @@
 # reliableUDPtransfer
 This Java application provides reliable data transfer using UDP
 
-# 1. The protocol uses a two way handshake as only the client is sending data to the server
-# and so two way handshake suffices for this protocol. In TCP protocol, a 3 way
-# handshake is used which causes an overhead.
+1. The protocol uses a two way handshake as only the client is sending data to the server
+and so two way handshake suffices for this protocol. In TCP protocol, a 3 way
+handshake is used which causes an overhead.
 2. In TCP, multiple acknowledgments cause the traffic to increase in the network leading to
 congestion. In this protocol. In this protocol, the acknowledements are sent only once
 and hence congestion is avoided.
@@ -15,7 +15,9 @@ the sender side and in this way, the hashmap is maintained. In case a bad ack co
 from the receiver side, the sender searches for the sequence number for which a bad
 ack came in O(1) time and retransmits the data stored as a value for that sequence
 number.
-Working of the protocol:
+
+## Working of the protocol:
+
 1. From the client side (sender side), intially a SYN segment is created in which SYN bit is
 set to 1, this bit is sent to the server side. If the server responds with an ack, a
 handshake is successfully implemented and only after this, the data sending can be
@@ -32,3 +34,13 @@ Hence, the server, sends a BAD_ACK stating the sequence number missing on the
 server side and asks for retransmission of the packet.
 4. After receiving a BAD_ACK from the receiver, the sender calls the
 retransmission_needed method to resend the packet that is dropped previously.
+5. After receving the retransmitted packet from the sender, the server now checks if the
+packet has already been added to its buffer or not, it yes, it ignores the packet so that
+repetition of packet is avoided. If not, it adds the packet with the sequence number in the
+hashmap.
+6. Along with adding the data and the sequence number in the hashmap, there is a
+fileoutput stream reading the byte array from each packet and storing them. When the
+packet arrives, it adds it to the buffer and stores the data from the packet ignoring the
+headers.
+7. In this way, the reliable protocol designed over UDP provides additional reliability
+compared to UDP and less overhead as compared to TCP.
